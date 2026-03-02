@@ -1,0 +1,33 @@
+//| mvnDeps:
+//| - com.goyeau::mill-scalafix::0.6.0
+
+package build
+
+import mill.*, scalalib.*
+import com.goyeau.mill.scalafix.ScalafixModule
+
+object visualizer extends ScalaModule with ScalafixModule {
+  def scalaVersion = "3.3.6"
+
+  def mainClass = Some("visualizer.Main")
+
+  override def sources = Task.Sources(moduleDir / os.up / "src" / "visualizer")
+
+  def mvnDeps = Seq(
+    mvn"com.monovore::decline:2.6.0",
+    mvn"com.outr::scribe:3.15.0"
+  )
+
+  override def scalacOptions = Task {
+    super.scalacOptions() ++ Seq("-Xsemanticdb", "-Wunused:imports")
+  }
+
+  object test extends ScalaTests with TestModule.Munit with ScalafixModule {
+    override def sources = Task.Sources(moduleDir / os.up / os.up / "test" / "src" / "visualizer")
+
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit:1.2.0",
+      mvn"org.scalameta::munit-scalacheck:1.2.0"
+    )
+  }
+}
