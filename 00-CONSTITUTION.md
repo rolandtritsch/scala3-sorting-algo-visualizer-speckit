@@ -1,4 +1,4 @@
-# scala3-sorting-algo-visualizer-speckit Constitution
+# scala3-sorting-algo-visualizer-speckit - Constitution
 
 ## Core Principles
 
