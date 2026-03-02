@@ -31,3 +31,12 @@ execution time (elapse-time - (delay-between-steps-ms * number-of-steps)).
 With the gui flag it will display a window in the middle of the acreen, that
 will show the sorting of the array every step of the way as a bar-chart. When
 the sorting is done the window can be closed with the ESC key.
+
+At the end ...
+
+- README.md - should documented what this repo is doing/implementing and how to
+  use it
+- CLAUDE.md - should documented how the visualizer is architected and designed
+  and implemented
+- CONTRUBUTING.md - should document how to make changes and how to
+  build/test/run the changes
