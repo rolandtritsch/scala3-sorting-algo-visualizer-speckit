@@ -69,6 +69,8 @@ description.
   all code paths
 - **CLI parsing**: One library, consistently applied across all commands
   (establish at project init)
+- **CI/CD**: Every push to main needs to result in a build/test run to started
+  on GitHub
 
 ## Governance
 
