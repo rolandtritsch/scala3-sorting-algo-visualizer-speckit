@@ -1,4 +1,4 @@
-# scala3-sorting-algo-visualizer-speckit - Specify - What to build
+# scala3-sorting-algo-visualizer-speckit - Specify
 
 Build a CLI tool called Visualizer. 
 
