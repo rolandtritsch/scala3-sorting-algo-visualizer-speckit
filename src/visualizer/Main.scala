@@ -23,7 +23,7 @@ object Main:
 
     val guiOpt: Option[gui.GuiRenderer] =
       if config.gui then
-        val r = new gui.GuiRenderer(config)
+        val r = new gui.GuiRenderer(config, collection)
         r.open()
         Some(r)
       else None
@@ -40,7 +40,7 @@ object Main:
       stepCount += 1
       lastCollection = step.collectionAfter
       logStep(step)
-      guiOpt.foreach(_.update(step, config))
+      guiOpt.foreach(_.update(step))
       if config.delayBetweenStepsMs > 0 then
         Thread.sleep(config.delayBetweenStepsMs.toLong)
 

@@ -5,42 +5,41 @@ import javax.swing.JPanel
 import visualizer.cli.CliConfig
 import visualizer.domain.model.SortingStep
 
-/** JPanel subclass that renders the collection as a vertical bar chart. */
-class BarChartPanel(config: CliConfig) extends JPanel:
+/** JPanel subclass that renders the collection as a vertical bar chart.
+  *
+  * @param config
+  *   CLI config (provides maxElementSize for bar height scaling)
+  * @param initialElements
+  *   the unsorted collection so bars are visible before the first step
+  */
+class BarChartPanel(config: CliConfig, initialElements: IndexedSeq[Int]) extends JPanel:
   setPreferredSize(Dimension(800, 600))
-  setBackground(Color.WHITE)
+  setBackground(Color.BLACK)
 
-  @volatile private var currentStep: Option[SortingStep] = None
-  @volatile private var currentConfig: CliConfig = config
+  // Written from the main thread, read from the EDT — must be volatile.
+  @volatile private var elements: IndexedSeq[Int]       = initialElements
+  @volatile private var highlightedPair: (Int, Int)     = (-1, -1)
 
-  def updateStep(step: SortingStep, cfg: CliConfig): Unit =
-    currentStep = Some(step)
-    currentConfig = cfg
+  def updateStep(step: SortingStep): Unit =
+    elements        = step.collectionAfter
+    highlightedPair = step.movedPositions
 
   override def paintComponent(g: Graphics): Unit =
     super.paintComponent(g)
-    currentStep match
-      case None => drawInitial(g)
-      case Some(step) =>
-        val cfg = currentConfig
-        val elems = step.collectionAfter
-        val w = getWidth
-        val h = getHeight
-        val n = elems.size
-        if n == 0 then return
-        val barW = math.max(1, w / n)
-        val (hi, hj) = step.movedPositions
-        elems.zipWithIndex.foreach { (v, i) =>
-          val barH = (v.toDouble / cfg.maxElementSize * (h - 4)).toInt
-          val x = i * barW
-          val y = h - barH
-          g.setColor(if i == hi || i == hj then Color.RED else Color.DARK_GRAY)
-          g.fillRect(x, y, barW - 1, barH)
-        }
-
-  private def drawInitial(g: Graphics): Unit =
-    val elems = config match
-      case c if c.numberOfElements == 0 => IndexedSeq.empty[Int]
-      case _ => IndexedSeq.empty[Int] // pre-sort state not stored here
-    g.setColor(Color.GRAY)
-    g.drawString("Waiting for sort to start...", 10, 30)
+    val elems = elements
+    val n     = elems.size
+    if n == 0 then
+      g.setColor(Color.GRAY)
+      g.drawString("(empty collection)", 10, 30)
+      return
+    val w              = getWidth
+    val h              = getHeight
+    val barW           = math.max(1, w / n)
+    val (hi, hj)       = highlightedPair
+    elems.zipWithIndex.foreach { (v, i) =>
+      val barH = ((v.toDouble / config.maxElementSize) * (h - 4)).toInt.max(1)
+      val x    = i * barW
+      val y    = h - barH
+      g.setColor(if i == hi || i == hj then Color.RED else Color.CYAN)
+      g.fillRect(x, y, (barW - 1).max(1), barH)
+    }
