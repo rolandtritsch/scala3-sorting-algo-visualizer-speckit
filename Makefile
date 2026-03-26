@@ -6,21 +6,19 @@ MAX_SIZE   = 100
 DELAY_MS   = 100
 DATA_STRUCT = array
 
+.DEFAULT_GOAL := help
+
 .PHONY: compile
-compile:
+compile: ## Compile all sources
 	$(MILL) visualizer.compile
 
 .PHONY: help
-help:
-	@echo "Usage: make <target>"
-	@echo ""
-	@echo "  compile   Compile all sources"
-	@echo "  test      Run all tests"
-	@echo "  run       Run in headless mode (quicksort, $(ELEMENTS) elements)"
-	@echo "  run-gui   Run with bar-chart GUI (quicksort, $(ELEMENTS) elements)"
+help: ## Show help for all targets
+	@echo "Available targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: run
-run:
+run: ## Run in headless mode (quicksort, $(ELEMENTS) elements)
 	$(MILL) visualizer.run \
 	  --algorithm $(ALGORITHM) \
 	  --number-of-elements $(ELEMENTS) \
@@ -29,7 +27,7 @@ run:
 	  --data-structure $(DATA_STRUCT)
 
 .PHONY: run-gui
-run-gui:
+run-gui: ## Run with bar-chart GUI (quicksort, $(ELEMENTS) elements)
 	$(MILL) visualizer.run \
 	  --algorithm $(ALGORITHM) \
 	  --number-of-elements $(ELEMENTS) \
@@ -39,5 +37,5 @@ run-gui:
 	  --gui
 
 .PHONY: test
-test:
+test: ## Run all tests
 	$(MILL) __.test
